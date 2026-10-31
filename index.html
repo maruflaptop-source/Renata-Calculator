@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Field Cash & Note Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            padding-bottom: 70px;
+            color: var(--text-dark);
+            user-select: none;
+        }
+
+        .header-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 15px 12px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-tabs {
+            border-bottom: none;
+            gap: 6px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px !important;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .hero-summary {
+            background: #0b132b;
+            color: #ffffff;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .hero-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #94a3b8;
+            margin-bottom: 2px;
+        }
+
+        .hero-amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: #10b981;
+            letter-spacing: -0.5px;
+        }
+
+        .badge-status {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            font-weight: 600;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .grid-chip {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .grid-chip-title {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .grid-chip-value {
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .card-custom {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .cell-input {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: right;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .cell-input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        .cell-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        .btn-inc-dec {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #334155;
+            transition: active 0.1s;
+        }
+
+        .btn-inc-dec:active {
+            background: #e2e8f0;
+            transform: scale(0.95);
+        }
+
+        .toast-notify {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: none;
+        }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .no-print { display: none !important; }
+            .card-custom { border: none; box-shadow: none; }
+            .hero-summary { background: #fff; color: #000; border: 1px solid #ccc; }
+            .hero-amount { color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast-notify">Data Saved Successfully!</div>
+
+<!-- Header -->
+<div class="header-bg no-print">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h6 class="m-0 fw-bold"><i class="bi bi-calculator-fill text-warning me-2"></i>Field Cash Master</h6>
+            <small class="text-white-50" style="font-size: 11px;">Brac Bank Agent Banking Tool</small>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="saveData()"><i class="bi bi-floppy me-1"></i>Save</button>
+            <button class="btn btn-sm btn-danger rounded-pill px-2" onclick="resetCurrentTab()"><i class="bi bi-arrow-counterclockwise"></i></button>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs nav-fill" id="appTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="part1-tab" data-bs-toggle="tab" data-bs-target="#part1" type="button"><i class="bi bi-cash-stack me-1"></i>1. Daily Cash</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="part2-tab" data-bs-toggle="tab" data-bs-target="#part2" type="button"><i class="bi bi-card-checklist me-1"></i>2. Note Counter</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="part3-tab" data-bs-toggle="tab" data-bs-target="#part3" type="button"><i class="bi bi-wallet2 me-1"></i>3. bKash Fee</button>
+        </li>
+    </ul>
+</div>
+
+<div class="container py-3">
+    <div class="tab-content" id="appTabsContent">
+
+        <!-- PART 1: DAILY CASH CALCULATION -->
+        <div class="tab-pane fade show active" id="part1" role="tabpanel">
+            
+            <!-- Hero Summary Card -->
+            <div id="reportCard" class="hero-summary">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="hero-title">সর্বমোট ক্যাশ (NET CASH)</div>
+                        <div class="hero-amount" id="netCashDisplay">৳0</div>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge-status" id="statusBadge">পজিটিভ (Positive)</span>
+                        <button class="btn btn-sm text-white-50 p-0 d-block mt-2 ms-auto no-print" onclick="copyText('netCashDisplay')"><i class="bi bi-copy me-1"></i>কপি</button>
+                    </div>
+                </div>
+
+                <div class="row g-2 mt-2">
+                    <div class="col-3">
+                        <div class="grid-chip">
+                            <div class="grid-chip-title text-success">Posting (+)</div>
+                            <div class="grid-chip-value text-success" id="chipPosting">0</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="grid-chip">
+                            <div class="grid-chip-title text-success">Collect (+)</div>
+                            <div class="grid-chip-value text-success" id="chipCollection">0</div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="grid-chip">
+                            <div class="grid-chip-title text-danger">A/C (-)</div>
+                            <div class="grid-chip-value text-danger" id="chipAC">0</div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="grid-chip">
+                            <div class="grid-chip-title text-warning">Due (-)</div>
+                            <div class="grid-chip-value text-warning" id="chipDue">0</div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="grid-chip">
+                            <div class="grid-chip-title text-info">C/W (-)</div>
+                            <div class="grid-chip-value text-info" id="chipCW">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordion Inputs -->
+            <div class="accordion mb-3" id="calcAccordion">
+                
+                <!-- Posting Section -->
+                <div class="accordion-item border-0 mb-2 card-custom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-light text-success fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accPosting">
+                            <i class="bi bi-plus-circle-fill me-2"></i>Posting (৫০টি সেল)
+                            <span class="ms-auto badge bg-success me-2" id="sumPostingBadge">৳0</span>
+                        </button>
+                    </h2>
+                    <div id="accPosting" class="accordion-collapse collapse show" data-bs-parent="#calcAccordion">
+                        <div class="accordion-body p-2">
+                            <div class="row g-2" id="containerPosting"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collection Section -->
+                <div class="accordion-item border-0 mb-2 card-custom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-light text-success fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accCollection">
+                            <i class="bi bi-plus-circle-fill me-2"></i>Collection (২০টি সেল)
+                            <span class="ms-auto badge bg-success me-2" id="sumCollectionBadge">৳0</span>
+                        </button>
+                    </h2>
+                    <div id="accCollection" class="accordion-collapse collapse" data-bs-parent="#calcAccordion">
+                        <div class="accordion-body p-2">
+                            <div class="row g-2" id="containerCollection"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- A/C Section -->
+                <div class="accordion-item border-0 mb-2 card-custom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-light text-danger fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accAC">
+                            <i class="bi bi-dash-circle-fill me-2"></i>A/C (৩০টি সেল)
+                            <span class="ms-auto badge bg-danger me-2" id="sumACBadge">৳0</span>
+                        </button>
+                    </h2>
+                    <div id="accAC" class="accordion-collapse collapse" data-bs-parent="#calcAccordion">
+                        <div class="accordion-body p-2">
+                            <div class="row g-2" id="containerAC"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Due Section -->
+                <div class="accordion-item border-0 mb-2 card-custom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-light text-warning fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accDue">
+                            <i class="bi bi-dash-circle-fill me-2"></i>Due (২০টি সেল)
+                            <span class="ms-auto badge bg-warning text-dark me-2" id="sumDueBadge">৳0</span>
+                        </button>
+                    </h2>
+                    <div id="accDue" class="accordion-collapse collapse" data-bs-parent="#calcAccordion">
+                        <div class="accordion-body p-2">
+                            <div class="row g-2" id="containerDue"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- C/W Section -->
+                <div class="accordion-item border-0 mb-2 card-custom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-light text-info fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accCW">
+                            <i class="bi bi-dash-circle-fill me-2"></i>C/W (২০টি সেল)
+                            <span class="ms-auto badge bg-info text-dark me-2" id="sumCWBadge">৳0</span>
+                        </button>
+                    </h2>
+                    <div id="accCW" class="accordion-collapse collapse" data-bs-parent="#calcAccordion">
+                        <div class="accordion-body p-2">
+                            <div class="row g-2" id="containerCW"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Summary Breakdown Table -->
+            <div class="card card-custom p-3">
+                <h6 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-journal-text me-2"></i>Summary Breakdown</h6>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted"><i class="bi bi-plus-lg text-success me-1"></i>(1) Posting Subtotal:</span>
+                    <span class="fw-bold" id="breakPosting">৳0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted"><i class="bi bi-plus-lg text-success me-1"></i>(2) Collection Subtotal:</span>
+                    <span class="fw-bold" id="breakCollection">৳0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 text-success fw-bold p-2 bg-light rounded">
+                    <span>Total Inflow (Posting + Collection):</span>
+                    <span id="breakInflow">৳0</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted"><i class="bi bi-dash-lg text-danger me-1"></i>(3) A/C Subtotal:</span>
+                    <span class="fw-bold" id="breakAC">৳0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted"><i class="bi bi-dash-lg text-danger me-1"></i>(4) Due Subtotal:</span>
+                    <span class="fw-bold" id="breakDue">৳0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted"><i class="bi bi-dash-lg text-danger me-1"></i>(5) C/W Subtotal:</span>
+                    <span class="fw-bold" id="breakCW">৳0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 text-danger fw-bold p-2 bg-light rounded">
+                    <span>Total Outflow (A/C + Due + C/W):</span>
+                    <span id="breakOutflow">৳0</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background: #e0f2fe;">
+                    <span class="fw-bold text-primary">অবশিষ্ট ক্যাশ (Final Cash Result):</span>
+                    <span class="fs-4 fw-extrabold text-primary" id="breakFinal">৳0</span>
+                </div>
+
+                <div class="row g-2 mt-3 no-print">
+                    <div class="col-6">
+                        <button class="btn btn-dark w-100 py-2 rounded-3 fw-bold" onclick="window.print()"><i class="bi bi-printer me-2"></i>প্রিন্ট / PDF রিপোর্ট</button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-outline-primary w-100 py-2 rounded-3 fw-bold" onclick="downloadJPG()"><i class="bi bi-image me-2"></i>JPG ডাউনলোড</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PART 2: TAKA NOTE CALCULATION -->
+        <div class="tab-pane fade" id="part2" role="tabpanel">
+            <div class="card card-custom p-3 mb-3">
+                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-plus-minus me-2"></i>Adjustments (Credit & Debit)</h6>
+                
+                <div class="row g-2 mb-2">
+                    <div class="col-4">
+                        <label class="cell-label text-success">Credit 1 (+)</label>
+                        <input type="number" class="cell-input part2-credit" oninput="calcPart2()" placeholder="0">
+                    </div>
+                    <div class="col-4">
+                        <label class="cell-label text-success">Credit 2 (+)</label>
+                        <input type="number" class="cell-input part2-credit" oninput="calcPart2()" placeholder="0">
+                    </div>
+                    <div class="col-4">
+                        <label class="cell-label text-success">Credit 3 (+)</label>
+                        <input type="number" class="cell-input part2-credit" oninput="calcPart2()" placeholder="0">
+                    </div>
+                </div>
+                <div>
+                    <label class="cell-label text-danger">Debit (-)</label>
+                    <input type="number" class="cell-input" id="part2Debit" oninput="calcPart2()" placeholder="0">
+                </div>
+            </div>
+
+            <!-- Denominations List -->
+            <div class="card card-custom p-2 mb-3" id="denomContainer">
+                <!-- Javascript will populate notes 1000 to 1 -->
+            </div>
+
+            <!-- Part 2 Summary Card -->
+            <div class="hero-summary">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-white-50" style="font-size: 13px;">Notes Count: <strong id="p2TotalNotesCount" class="text-white">0</strong></span>
+                    <button class="btn btn-sm text-white-50 p-0 no-print" onclick="copyText('p2TotalTaka')"><i class="bi bi-copy me-1"></i>কপি</button>
+                </div>
+                <div class="hero-title">Total Taka :-</div>
+                <div class="hero-amount text-warning" id="p2TotalTaka">৳0/-</div>
+                <div class="mt-2 text-white-50 style-
